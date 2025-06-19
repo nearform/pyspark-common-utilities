@@ -1,6 +1,6 @@
 import pytest
 from pyspark.sql import SparkSession
-from pyspark_utilities import remove_duplicates, fill_nulls
+from pyspark_utilities.utilities import remove_duplicates, fill_nulls
 
 spark = SparkSession.builder.master("local[*]").appName("Test").getOrCreate()
 
@@ -17,5 +17,5 @@ def test_fill_nulls():
     ], ["name", "city"])
     result = fill_nulls(df, {"name": "NA", "city": "Unknown City"})
     rows = result.collect()
-    assert rows[0]["name"] == "Unknown"
+    assert rows[0]["name"] == "NA"
     assert rows[1]["city"] == "Unknown City"
