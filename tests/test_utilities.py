@@ -1,6 +1,6 @@
 import pytest
 from pyspark.sql import SparkSession
-from pyspark_utilities.utilities import remove_duplicates, fill_nulls
+from src.utilities import remove_duplicates, fill_nulls
 
 spark = SparkSession.builder.master("local[*]").appName("Test").getOrCreate()
 

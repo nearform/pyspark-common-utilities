@@ -8,6 +8,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'pyspark>=3.0.0',
+        'pytest'
     ],
     python_requires='>=3.8',
 )
