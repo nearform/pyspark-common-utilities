@@ -1,4 +1,3 @@
-import pytest
 from pyspark.sql import SparkSession
 from src.utilities import remove_duplicates, fill_nulls
 
