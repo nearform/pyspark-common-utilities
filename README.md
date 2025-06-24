@@ -1,3 +1,5 @@
+[![Continuous Integration](https://github.com/nearform/pyspark-common-utilities/actions/workflows/ci.yml/badge.svg)](https://github.com/nearform/pyspark-common-utilities/actions/workflows/ci.yml)
+
 # PYSPARK-UTILITIES
 
 ### PYSPARK-UTILITIES are reusable components which are small functionalities that are commonly part of data pipelines. We are creating functions for these that can be used when required.
