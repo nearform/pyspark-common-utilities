@@ -1,31 +1,20 @@
-node_modules
-.eslintcache
-
-# JetBrains IDEs
-.idea
-# Visual Studio Code
-.vscode
-
-# OS X
-.DS_Store
-
-# Git specific
-.git/
-
-# Build artifacts and distribution files
+# Python build artifacts
 dist/
 build/
 *.egg-info/
 
-# Python specific
+# Python bytecode
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
 *.pyc
 
-# Testing artifacts
+# Test artifacts
 .pytest_cache/
 
-# IDE/Editor specific
+# VS Code settings
 .vscode/
 
-# Operating System specific (common ignores)
-.DS_Store # macOS
+# macOS system file
+.DS_Store
