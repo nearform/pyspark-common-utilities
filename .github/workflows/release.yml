@@ -1,6 +1,17 @@
 name: Publish to PyPI
 
 on:
+  workflow_dispatch:
+    inputs:
+      semver:
+        description: The semver to use
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
   push:
     branches:
       - master
@@ -12,23 +23,37 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
-      - name: Install build tools
-        run: |
-          python -m pip install --upgrade pip build twine
+      # - name: Set up Python (from .python-version) # python-version file picks static version
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version-file: .python-version
 
-      - name: Build package
-        run: python -m build
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine bump-my-version
+
+      - name: Optic Release Automation with custom bump
+        uses: nearform-actions/optic-release-automation-action@feat/support-custom-bump-command
+        with:
+          bump-command: bump-my-version bump ${{ github.event.inputs.semver }}
+          semver: ${{ github.event.inputs.semver }}
+          build-command: python -m build
+          commit-message: "Release {version}"
 
       - name: Publish to PyPI
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          # TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          TWINE_PASSWORD: pypi-AgEIcHlwaS5vcmcCJGFjNzM0MjM2LThmYWMtNDE2OS05NzE4LTY1ZDEzNjM3NDU4MAACKlszLCIxZjFjZTcxYS03NjJlLTRkMDItODFlYy0yYTZiOGMxMjRlOTAiXQAABiCgNrOUjk-bpUeX_M2qw0TU9mzqdeBGN5IVpcYGP_VHQA
         run: twine upload dist/*
