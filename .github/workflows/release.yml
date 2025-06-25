@@ -46,7 +46,7 @@ jobs:
       - name: Optic Release Automation with custom bump
         uses: nearform-actions/optic-release-automation-action@feat/support-custom-bump-command
         with:
-          bump-command: bump-my-version bump ${{ github.event.inputs.semver }}
+          bump-command: bump-my-version bump
           semver: ${{ github.event.inputs.semver }}
           build-command: python -m build
           commit-message: "Release {version}"
