@@ -40,9 +40,7 @@ jobs:
 
       - name: Optic Release Automation with custom bump
         uses: nearform-actions/optic-release-automation-action@feat/support-custom-bump-command
-        # uses: hakimnajmipocketwalla/optic-release-automation-action@feat/custom-version-bump
         with:
-          github-token: ${{ secrets.GH_PAT }}
           bump-command: bump-my-version bump
           semver: ${{ github.event.inputs.semver }}
           build-command: |
