@@ -50,7 +50,9 @@ jobs:
         with:
           bump-command: bump-my-version bump
           semver: ${{ github.event.inputs.semver }}
-          build-command: python -m build
+          build-command: |
+            rm -rf dist/
+            python -m build
           commit-message: "Release {version}"
 
       - name: Publish to PyPI
