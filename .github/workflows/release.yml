@@ -14,7 +14,8 @@ on:
           - major
   push:
     branches:
-      - master
+      # - master
+      - feature_pyspark_utilities
     tags:
       - 'v*'
   # pull_request:
