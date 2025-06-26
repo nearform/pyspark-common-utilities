@@ -12,13 +12,8 @@ on:
           - patch
           - minor
           - major
-  push:
-    branches:
-      - master
-    tags:
-      - 'v*'
-  # pull_request:
-  #   types: [closed]
+  pull_request:
+    types: [closed]
 
 jobs:
   release:
@@ -44,8 +39,8 @@ jobs:
           pip install build twine bump-my-version
 
       - name: Optic Release Automation with custom bump
-        # uses: nearform-actions/optic-release-automation-action@feat/support-custom-bump-command
-        uses: hakimnajmipocketwalla/optic-release-automation-action@feat/custom-version-bump
+        uses: nearform-actions/optic-release-automation-action@feat/support-custom-bump-command
+        # uses: hakimnajmipocketwalla/optic-release-automation-action@feat/custom-version-bump
         with:
           github-token: ${{ secrets.GH_PAT }}
           bump-command: bump-my-version bump
