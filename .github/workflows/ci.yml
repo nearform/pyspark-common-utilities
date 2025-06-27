@@ -3,8 +3,7 @@ name: Continuous Integration
 on: 
   push:
    branches:
-    #- master
-    - feature_pyspark_utilities
+    - master
   pull_request:
 
 jobs:
