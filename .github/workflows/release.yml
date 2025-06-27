@@ -39,13 +39,12 @@ jobs:
           pip install build twine bump-my-version
 
       - name: Optic Release Automation with custom bump
-        uses: nearform-actions/optic-release-automation-action@feat/support-custom-bump-command
+        uses: nearform-actions/optic-release-automation-action@v4 
         with:
           bump-command: bump-my-version bump
+          get-version-command: bump-my-version show current_version
           semver: ${{ github.event.inputs.semver }}
-          build-command: |
-            rm -rf dist/
-            python -m build
+          build-command: python -m build
           commit-message: "Release {version}"
 
       - name: Publish to PyPI
