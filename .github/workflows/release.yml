@@ -1,4 +1,5 @@
-name: release
+name: Publish to PyPI
+
 on:
   workflow_dispatch:
     inputs:
@@ -17,13 +18,38 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
       issues: write
       pull-requests: write
+
     steps:
-      - uses: nearform-actions/optic-release-automation-action@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
+          python-version-file: 'pyproject.toml'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine bump-my-version
+
+      - name: Optic Release Automation with custom bump
+        uses: nearform-actions/optic-release-automation-action@v4 
+        with:
+          bump-command: bump-my-version bump
+          get-version-command: bump-my-version show current_version
           semver: ${{ github.event.inputs.semver }}
-          commit-message: 'chore: release {version}'
-          build-command: npm ci
+          build-command: python -m build
+          commit-message: "Release {version}"
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload dist/*
+        

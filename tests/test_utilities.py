@@ -1,8 +1,8 @@
-import pytest
 from pyspark.sql import SparkSession
-from pyspark_utilities.utilities import remove_duplicates, fill_nulls
+from src.utilities import remove_duplicates, fill_nulls
 
 spark = SparkSession.builder.master("local[*]").appName("Test").getOrCreate()
+
 
 def test_remove_duplicates():
     df = spark.createDataFrame([
@@ -10,6 +10,7 @@ def test_remove_duplicates():
     ], ["name", "city"])
     result = remove_duplicates(df)
     assert result.count() == 2
+
 
 def test_fill_nulls():
     df = spark.createDataFrame([
