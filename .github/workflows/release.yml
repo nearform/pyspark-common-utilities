@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: release
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
           pip install build twine bump-my-version
 
       - name: Optic Release Automation with custom bump
-        uses: nearform-actions/optic-release-automation-action@v4 
+        uses: nearform-actions/optic-release-automation-action@fix/custom-get-version 
         with:
           bump-command: bump-my-version bump
           get-version-command: bump-my-version show current_version
