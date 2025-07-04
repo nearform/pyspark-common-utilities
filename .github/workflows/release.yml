@@ -48,6 +48,7 @@ jobs:
           commit-message: "Release {version}"
 
       - name: Publish to PyPI
+        if: ${{ github.event_name == 'pull_request' }}
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
