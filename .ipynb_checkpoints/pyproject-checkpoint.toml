@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyspark_common_utilities"
+version = "0.1.6"
+description = "Reusable PySpark common utility functions for data pipelines"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+  {name = "Hakim Pocketwalla", email = "hakim.pocketwalla@nearform.com"}
+]
+dependencies = [
+  "pyspark>=3.0.0"
+]
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "flake8"
+]
+
+[project.urls]
+Homepage = "https://github.com/nearform/pyspark-common-utilities"
+
+[tool.bumpversion]
+current_version = "0.1.6"
+commit = false
+tag = false
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"

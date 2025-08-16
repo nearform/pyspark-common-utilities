@@ -20,4 +20,3 @@ def test_fill_nulls():
     rows = result.collect()
     assert rows[0]["name"] == "NA"
     assert rows[1]["city"] == "Unknown City"
-
