@@ -1,5 +1,11 @@
 from pyspark.sql import SparkSession
-from src.utilities import remove_duplicates, fill_nulls,flatten_json,mask_dataframe
+
+from src.utilities import (
+    remove_duplicates,
+    fill_nulls,
+    flatten_json,
+    mask_dataframe
+)
 
 spark = SparkSession.builder.master("local[*]").appName("Test").getOrCreate()
 
@@ -34,11 +40,17 @@ def test_flatten_json_exploding_arrays():
     }]
     df = spark.read.json(spark.sparkContext.parallelize(data))
 
-    result=flatten_json(df,explode_arrays=True)
+    result = flatten_json(df, explode_arrays=True)
     # Check flattened columns
-    expected_cols = {"id", "name", "address_city", "address_zipcode", "phones_type", "phones_number"}
+    expected_cols = {
+         "id",
+         "name",
+         "address_city",
+         "address_zipcode",
+         "phones_type",
+         "phones_number"
+                    }
     assert set(result.columns) == expected_cols
-    # Check number of output rows count 
     assert result.count() == 2
 
 
@@ -54,17 +66,16 @@ def test_flatten_json_no_exploding_arrays():
     }]
     df = spark.read.json(spark.sparkContext.parallelize(data))
 
-    result=flatten_json(df,explode_arrays=False)
+    result = flatten_json(df, explode_arrays=False)
     # Check flattened columns
     expected_cols = {"id", "name", "address_city", "address_zipcode", "phones"}
     assert set(result.columns) == expected_cols
-    # Check number of output rows count 
+    # Check number of output rows count
     assert result.count() == 1
-    
 
 
 def test_full_mask():
-    df=spark.createDataFrame(
+    df = spark.createDataFrame(
         [
             (1, "Alice", "alice@example.com", "9876543210"),
             (2, "Bob", "bob@example.com", "9123456789"),
@@ -75,10 +86,10 @@ def test_full_mask():
     masked = mask_dataframe(df, ["name"], default_mask="MASKED")
     rows = masked.select("name").collect()
     assert all(r.name == "MASKED" or r.name is None for r in rows)
-    
+
 
 def test_partial_mask():
-    df=spark.createDataFrame(
+    df = spark.createDataFrame(
         [
             (1, "Alice", "alice@example.com", "9876543210"),
             (2, "Bob", "bob@example.com", "9123456789"),
@@ -89,16 +100,27 @@ def test_partial_mask():
     masked = mask_dataframe(df, {"name": "partial"})
     rows = [r.name for r in masked.select("name").collect()]
 
-    for original, masked_val in zip(["Alice", "Bob", None], rows):
+    expected = ["Al***", "Bo*", None]
+    for original, masked_val, expected_val in zip(
+        ["Alice", "Bob", None],
+        rows,
+        expected,
+    ):
         if original is None:
             assert masked_val is None
         else:
-            assert masked_val.startswith(original[:2])  # first 2 preserved
-            assert set(masked_val[2:]) <= {"*"}        # rest are only '*'
-            assert len(masked_val) == len(original)    # length unchanged
+            # first 2 chars preserved
+            assert masked_val.startswith(original[:2])
+            # rest must be *
+            assert set(masked_val[2:]) <= {"*"}
+            # same length
+            assert len(masked_val) == len(original)
+            # matches expected output
+            assert masked_val == expected_val
+
 
 def test_hash_mask():
-    df=spark.createDataFrame(
+    df = spark.createDataFrame(
         [
             (1, "Alice", "alice@example.com", "9876543210"),
             (2, "Bob", "bob@example.com", "9123456789"),
@@ -119,7 +141,7 @@ def test_hash_mask():
 
 
 def test_custom_expr_mask():
-    df=spark.createDataFrame(
+    df = spark.createDataFrame(
         [
             (1, "Alice", "alice@example.com", "9876543210"),
             (2, "Bob", "bob@example.com", "9123456789"),
@@ -127,14 +149,16 @@ def test_custom_expr_mask():
         ],
         ["id", "name", "email", "phone"]
     )
-    masked = mask_dataframe(df, {"phone": "expr:concat('XXX', substr(phone, -4, 4))"})
+    phone_expr = "expr:concat('XXX', substr(phone, -4, 4))"
+    masked = mask_dataframe(df, {"phone": phone_expr}, )
     rows = [r.phone for r in masked.select("phone").collect()]
     assert rows[0] == "XXX3210"
     assert rows[1] == "XXX6789"
     assert rows[2] is None  # null case handled
 
+
 def test_skip_nonexistent_column():
-    df=spark.createDataFrame(
+    df = spark.createDataFrame(
         [
             (1, "Alice", "alice@example.com", "9876543210"),
             (2, "Bob", "bob@example.com", "9123456789"),
