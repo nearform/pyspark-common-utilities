@@ -53,19 +53,29 @@ def test_flatten_json_exploding_arrays():
                     }
     assert set(result.columns) == expected_cols
     assert result.count() == 2
+
+    expected_row0 = {
+        "id": 1,
+        "name": "John",
+        "address_city": "NY",
+        "address_zipcode": 12345,
+        "phones_type": "home",
+        "phones_number": "1234"
+        }
+
+    expected_row1 = {
+        "id": 1,
+        "name": "John",
+        "address_city": "NY",
+        "address_zipcode": 12345,
+        "phones_type": "work",
+        "phones_number": "5678"
+        }
+
     rows = result.collect()
-    assert rows[0]["id"] == 1
-    assert rows[0]["name"] == "John"
-    assert rows[0]["address_city"] == "NY"
-    assert rows[0]["address_zipcode"] == 12345
-    assert rows[0]["phones_type"] == "home"
-    assert rows[0]["phones_number"] == "1234"
-    assert rows[1]["id"] == 1
-    assert rows[1]["name"] == "John"
-    assert rows[1]["address_city"] == "NY"
-    assert rows[1]["address_zipcode"] == 12345
-    assert rows[1]["phones_type"] == "work"
-    assert rows[1]["phones_number"] == "5678"
+
+    assert rows[0].asDict() == expected_row0
+    assert rows[1].asDict() == expected_row1
 
 
 def test_flatten_json_no_exploding_arrays():
@@ -87,13 +97,20 @@ def test_flatten_json_no_exploding_arrays():
     # Check number of output rows count
     assert result.count() == 1
     rows = result.collect()
-    assert rows[0]["id"] == 1
-    assert rows[0]["name"] == "John"
-    assert rows[0]["address_city"] == "NY"
-    assert rows[0]["address_zipcode"] == 12345
-    assert json.loads(rows[0]["phones"]) == [
-        {'number': '1234', 'type': 'home'},
-        {'number': '5678', 'type': 'work'}]
+    expected_row0 = {
+        "id": 1,
+        "name": "John",
+        "address_city": "NY",
+        "address_zipcode": 12345,
+        "phones": [
+            {"number": "1234", "type": "home"},
+            {"number": "5678", "type": "work"}
+            ]}
+
+    row0 = rows[0].asDict()
+    row0["phones"] = json.loads(row0["phones"])
+
+    assert row0 == expected_row0
 
 
 def test_full_mask():
