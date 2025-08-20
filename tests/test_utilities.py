@@ -6,6 +6,7 @@ from src.utilities import (
     flatten_json,
     mask_dataframe
 )
+import json
 
 spark = SparkSession.builder.master("local[*]").appName("Test").getOrCreate()
 
@@ -52,6 +53,19 @@ def test_flatten_json_exploding_arrays():
                     }
     assert set(result.columns) == expected_cols
     assert result.count() == 2
+    rows = result.collect()
+    assert rows[0]["id"] == 1
+    assert rows[0]["name"] == "John"
+    assert rows[0]["address_city"] == "NY"
+    assert rows[0]["address_zipcode"] == 12345
+    assert rows[0]["phones_type"] == "home"
+    assert rows[0]["phones_number"] == "1234"
+    assert rows[1]["id"] == 1
+    assert rows[1]["name"] == "John"
+    assert rows[1]["address_city"] == "NY"
+    assert rows[1]["address_zipcode"] == 12345
+    assert rows[1]["phones_type"] == "work"
+    assert rows[1]["phones_number"] == "5678"
 
 
 def test_flatten_json_no_exploding_arrays():
@@ -72,6 +86,14 @@ def test_flatten_json_no_exploding_arrays():
     assert set(result.columns) == expected_cols
     # Check number of output rows count
     assert result.count() == 1
+    rows = result.collect()
+    assert rows[0]["id"] == 1
+    assert rows[0]["name"] == "John"
+    assert rows[0]["address_city"] == "NY"
+    assert rows[0]["address_zipcode"] == 12345
+    assert json.loads(rows[0]["phones"]) == [
+        {'number': '1234', 'type': 'home'},
+        {'number': '5678', 'type': 'work'}]
 
 
 def test_full_mask():
@@ -150,7 +172,7 @@ def test_custom_expr_mask():
         ["id", "name", "email", "phone"]
     )
     phone_expr = "expr:concat('XXX', substr(phone, -4, 4))"
-    masked = mask_dataframe(df, {"phone": phone_expr}, )
+    masked = mask_dataframe(df, {"phone": phone_expr})
     rows = [r.phone for r in masked.select("phone").collect()]
     assert rows[0] == "XXX3210"
     assert rows[1] == "XXX6789"

@@ -123,7 +123,12 @@ def mask_dataframe(
             continue
 
         if mask_type == "full":
-            masked_df = masked_df.withColumn(col_name, lit(default_mask))
+            masked_df = masked_df.withColumn(
+                col_name,
+                when(
+                    col(col_name).isNotNull(), lit(default_mask)
+                    ).otherwise(lit(None))
+            )
 
         elif mask_type == "partial":
             # Show first 2 chars, mask rest
@@ -140,12 +145,14 @@ def mask_dataframe(
         elif mask_type == "hash":
             # Hash using SHA2-256
             masked_df = masked_df.withColumn(
-                col_name, sha2(col(col_name).cast("string"), 256)
-            )
+                col_name,
+                when(col(col_name).isNotNull(),
+                     sha2(col(col_name).cast("string"), 256)
+                     ).otherwise(lit(None)))
 
         elif mask_type.startswith("expr:"):
-            """ Custom SQL expression: e.g.,
-             {"phone": "expr:concat('XXX', substr(phone, -4, 4))"}"""
+            # Custom SQL expression: e.g.,
+            # {"phone": "expr:concat('XXX', substr(phone, -4, 4))"}
             custom_expr = mask_type.split("expr:", 1)[1]
             masked_df = masked_df.withColumn(col_name, expr(custom_expr))
 
