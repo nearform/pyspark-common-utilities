@@ -104,7 +104,7 @@ def df(spark: SparkSession) -> DataFrame:
             StructField("another_existing_column", StringType(), True),
         ]
     )
-    data = [(1, "value1"), (2, "value2")]
+    data = [("1", "value1"), ("2", "value2")]
     return spark.createDataFrame(data, schema)
 
 
