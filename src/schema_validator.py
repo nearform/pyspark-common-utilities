@@ -183,8 +183,8 @@ class SchemaDefinition:
 
         Example:
         schema = SchemaDefinition()
-                .add_rule(ColumnExistsRule("column_a"))
-                .add_rule(ColumnTypeRule("column_b", IntegerType()))
+            .add_rule(ColumnExistsRule("column_a"))
+            .add_rule(ColumnTypeRule("column_b", IntegerType()))
 
         """
         self._rules.append(rule)
@@ -198,8 +198,8 @@ class DataFrameValidator:
     Example:
     df = spark.createDataFrame(...)
     schema = SchemaDefinition()
-                .add_rule(ColumnExistsRule("column_a"))
-                .add_rule(ColumnTypeRule("column_b", IntegerType()))
+        .add_rule(ColumnExistsRule("column_a"))
+        .add_rule(ColumnTypeRule("column_b", IntegerType()))
     schema = DataFrameValidator(schema)
 
     print(schema.validate(df))
