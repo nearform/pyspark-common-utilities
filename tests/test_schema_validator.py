@@ -116,9 +116,7 @@ class TestColumnRules:
             ("missing_column", False),
         ],
     )
-    def test_column_exists_rule(
-        self, df: DataFrame, column_name: str, expected: bool
-    ):
+    def test_column_exists_rule(self, df: DataFrame, column_name: str, expected: bool):
         rule = ColumnExistsRule(column_name)
         result = rule.validate(df)
         assert result.is_valid == expected

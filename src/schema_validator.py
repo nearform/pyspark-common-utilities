@@ -54,14 +54,10 @@ class SchemaValidationReport:
         Total: X checks - Y errors
         """
 
-        header = (
-            f"Validation Report - {'VALID' if self.is_valid else 'INVALID'}"
-        )
+        header = f"Validation Report - {'VALID' if self.is_valid else 'INVALID'}"
         divider = "=" * 60
         results_str = "\n".join(str(r) for r in self.results)
-        summary = (
-            f"\nTotal: {len(self.results)} checks - {len(self.errors)} errors"
-        )
+        summary = f"\nTotal: {len(self.results)} checks - {len(self.errors)} errors"
         return f"{header}\n{divider}\n{results_str}{summary}"
 
 
@@ -95,9 +91,7 @@ class ColumnExistsRule(ColumnRelatedRule):
         is_valid = col in df.columns
         return ValidationResult(
             is_valid=is_valid,
-            message=f"Column {col} exists"
-            if is_valid
-            else f"Column {col} missing",
+            message=f"Column {col} exists" if is_valid else f"Column {col} missing",
         )
 
 

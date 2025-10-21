@@ -35,4 +35,4 @@ tag = false
 filename = "pyproject.toml"
 
 [tool.ruff]
-line-length = 79
+line-length = 90
