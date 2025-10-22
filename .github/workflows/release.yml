@@ -52,8 +52,9 @@ jobs:
         run: |
           set -e
           bump-my-version bump ${{ github.event.inputs.semver }}
-          echo "NEW_VERSION=$(bump-my-version show current_version)" >> $GITHUB_ENV
 
+      - name: Capture new version
+        run: echo "NEW_VERSION=$(bump-my-version show current_version)" >> $GITHUB_ENV
       - name: Commit and push changes
         run: |
           git add pyproject.toml
