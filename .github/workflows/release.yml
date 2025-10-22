@@ -4,16 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       semver:
-        description: The semver to use
+        description: 'Semver bump type'
         required: true
-        default: patch
+        default: 'patch'
         type: choice
         options:
           - patch
           - minor
           - major
-  pull_request:
-    types: [closed]
+      branch:
+        description: 'Branch to release from'
+        required: true
+        default: 'master'
+        type: string
 
 jobs:
   release:
@@ -21,13 +24,15 @@ jobs:
 
     permissions:
       contents: write
-      issues: write
-      pull-requests: write
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v5
-      
+        with:
+          ref: ${{ github.event.inputs.branch }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -38,19 +43,30 @@ jobs:
           python -m pip install --upgrade pip
           pip install build twine bump-my-version
 
-      - name: Optic Release Automation with custom bump
-        uses: nearform-actions/optic-release-automation-action@v4 
-        with:
-          bump-command: bump-my-version bump
-          get-version-command: bump-my-version show current_version
-          semver: ${{ github.event.inputs.semver }}
-          build-command: python -m build
-          commit-message: "Release {version}"
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        run: |
+          set -e
+          bump-my-version bump ${{ github.event.inputs.semver }}
+          echo "NEW_VERSION=$(bump-my-version show current_version)" >> $GITHUB_ENV
+
+      - name: Commit and push changes
+        run: |
+          git add pyproject.toml
+          git commit -m "Release v${{ env.NEW_VERSION }}"
+          git tag "v${{ env.NEW_VERSION }}"
+          git push origin ${{ github.event.inputs.branch }}
+          git push origin "v${{ env.NEW_VERSION }}"
+
+      - name: Build package
+        run: python -m build
 
       - name: Publish to PyPI
-        if: ${{ github.event_name == 'pull_request' }}
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: twine upload dist/*
-        
