@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyspark_common_utilities"
-version = "0.1.6"
+version = "0.1.7"
 description = "Reusable PySpark common utility functions for data pipelines"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -27,7 +27,7 @@ dev = [
 Homepage = "https://github.com/nearform/pyspark-common-utilities"
 
 [tool.bumpversion]
-current_version = "0.1.6"
+current_version = "0.1.7"
 commit = false
 tag = false
 
