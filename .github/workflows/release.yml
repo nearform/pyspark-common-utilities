@@ -12,11 +12,6 @@ on:
           - patch
           - minor
           - major
-      branch:
-        description: 'Branch to release from'
-        required: true
-        default: 'master'
-        type: string
 
 jobs:
   release:
@@ -56,7 +51,7 @@ jobs:
           git add pyproject.toml
           git commit -m "Release v${{ env.NEW_VERSION }}"
           git tag "v${{ env.NEW_VERSION }}"
-          git push origin ${{ github.event.inputs.branch }}
+          git push origin master
           git push origin "v${{ env.NEW_VERSION }}"
 
       - name: Build package
