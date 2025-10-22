@@ -18,7 +18,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest",
-  "flake8"
+  "flake8",
+  "mypy",
+  "ruff"
 ]
 
 [project.urls]
@@ -31,3 +33,6 @@ tag = false
 
 [[tool.bumpversion.files]]
 filename = "pyproject.toml"
+
+[tool.ruff]
+line-length = 90
