@@ -19,6 +19,7 @@ jobs:
 
     permissions:
       contents: write
+      id-token: write
 
     steps:
       - name: Checkout repo
@@ -32,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build twine bump-my-version
+          pip install build bump-my-version
 
       - name: Configure git
         run: |
@@ -68,8 +69,13 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload dist/*
+      - name: Publish to PyPI (Trusted Publishing)
+        id: pypi_publish
+        continue-on-error: true
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Check publish result
+        if: steps.pypi_publish.outcome == 'failure'
+        run: |
+          echo "::warning::PyPI publication failed. OIDC Trusted Publishing may not be configured for this repository."
+          exit 0
